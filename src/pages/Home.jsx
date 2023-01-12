@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import axios from 'axios';
 
 import Categories from '../components/Categories';
 import Sort from '../components/Sort';
@@ -7,10 +8,10 @@ import PizzaBlockSkeleton from '../components/PizzaBlock/PizzaBlockSkeleton';
 import Pagination from '../components/Pagination/Pagination';
 import { SearchContext } from '../App';
 import { useSelector, useDispatch } from 'react-redux';
-import { setCategoryId } from '../redux/slices/filterSlice';
+import { setCategoryId, setCurrentPage } from '../redux/slices/filterSlice';
 
 const Home = () => {
-  const { categoryId, sort } = useSelector((state) => state.filter);
+  const { categoryId, sort, currentPage } = useSelector((state) => state.filter);
   const dispatch = useDispatch();
 
   console.log(categoryId);
@@ -18,7 +19,6 @@ const Home = () => {
   const { searchValue } = useContext(SearchContext);
   const [items, setItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     setIsLoading(true);
@@ -27,22 +27,26 @@ const Home = () => {
 
     const sortBy = `sortBy=${sort.sort.replace('-', '')}&`;
     const orderBy = sort.sort.includes('-') ? 'order=desc' : 'order=asc';
-    fetch(
-      `https://63abe7eafdc006ba6068ad16.mockapi.io/items?page=${currentPage}&limit=4&` +
-        searchBy +
-        catBy +
-        sortBy +
-        orderBy,
-    )
-      .then((res) => res.json())
+    axios
+      .get(
+        `https://63abe7eafdc006ba6068ad16.mockapi.io/items?page=${currentPage}&limit=4&` +
+          searchBy +
+          catBy +
+          sortBy +
+          orderBy,
+      )
       .then((res) => {
-        setItems(res);
+        setItems(res.data);
         setIsLoading(false);
       });
   }, [categoryId, sort, searchValue, currentPage]);
 
   const handleCategoryClick = (id) => {
     dispatch(setCategoryId(id));
+  };
+
+  const handlePageClick = (index) => {
+    dispatch(setCurrentPage(index));
   };
 
   // const handleSortClick = (index) => {
@@ -63,7 +67,7 @@ const Home = () => {
       </div>
       <h2 className="content__title">Все пиццы</h2>
       <div className="content__items">{isLoading ? skeletons : pizzas}</div>
-      <Pagination onPageChange={(number) => setCurrentPage(number)} />
+      <Pagination currentPage={currentPage} onPageChange={(number) => handlePageClick(number)} />
     </>
   );
 };

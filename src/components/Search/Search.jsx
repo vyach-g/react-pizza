@@ -1,11 +1,33 @@
-import React, { useContext } from 'react';
+import React, { useState, useCallback, useContext, useRef } from 'react';
+import debounce from 'lodash.debounce';
 
 import { SearchContext } from '../../App';
 
 import styles from './Search.module.scss';
 
 const Search = () => {
+  const [value, setValue] = useState('');
   const { searchValue, setSearchValue } = useContext(SearchContext);
+  const inputRef = useRef();
+
+  const updateSeatchValue = useCallback(
+    debounce((str) => {
+      setSearchValue(str);
+    }, 1000),
+    [],
+  );
+
+  const handleChangeInput = (e) => {
+    setValue(e.target.value);
+    updateSeatchValue(e.target.value);
+  };
+
+  const handleCrossClick = () => {
+    setValue('');
+    setSearchValue('');
+    inputRef.current.focus();
+  };
+
   return (
     <div className={styles.root}>
       <svg
@@ -21,11 +43,13 @@ const Search = () => {
           strokeLinejoin="round"
         />
       </svg>
+      <div className={styles.cross} onClick={handleCrossClick}>
+        X
+      </div>
       <input
-        onChange={(e) => {
-          setSearchValue(e.target.value);
-        }}
-        value={searchValue}
+        ref={inputRef}
+        onChange={handleChangeInput}
+        value={value}
         placeholder="Поиск пиццы..."
         className={styles.input}></input>
     </div>
