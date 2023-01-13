@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setSort } from '../redux/slices/filterSlice';
 
-const SORT = [
-  { name: 'популярности+', sort: 'rating' },
-  { name: 'популярности-', sort: '-rating' },
-  { name: 'цене+', sort: 'price' },
-  { name: 'цене-', sort: '-price' },
-  { name: 'алфавиту+', sort: 'title' },
-  { name: 'алфавиту-', sort: '-title' },
+export const SORT = [
+  { name: 'популярности+', sortProperty: 'rating' },
+  { name: 'популярности-', sortProperty: '-rating' },
+  { name: 'цене+', sortProperty: 'price' },
+  { name: 'цене-', sortProperty: '-price' },
+  { name: 'алфавиту+', sortProperty: 'title' },
+  { name: 'алфавиту-', sortProperty: '-title' },
 ];
 
 const Sort = () => {
@@ -42,12 +42,12 @@ const Sort = () => {
       {open && (
         <div className="sort__popup">
           <ul>
-            {SORT.map((category, index) => (
+            {SORT.map((sort, index) => (
               <li
-                key={category.sort}
+                key={sort.sortProperty}
                 className={sort === index ? 'active' : ''}
-                onClick={() => handleClick(category)}>
-                {category.name}
+                onClick={() => handleClick(sort)}>
+                {sort.name}
               </li>
             ))}
           </ul>
