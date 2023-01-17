@@ -11,9 +11,12 @@ import Pagination from '../components/Pagination/Pagination';
 import { SearchContext } from '../App';
 import { useSelector, useDispatch } from 'react-redux';
 import { setCategoryId, setCurrentPage, setFilters } from '../redux/slices/filterSlice';
+import { fetchPizza } from '../redux/slices/pizzaSlice';
 
 const Home = () => {
   const { categoryId, sort, currentPage } = useSelector((state) => state.filter);
+  const { items, status } = useSelector((state) => state.pizza);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const isSearch = useRef(false);
@@ -22,14 +25,12 @@ const Home = () => {
   console.log(categoryId);
 
   const { searchValue } = useContext(SearchContext);
-  const [items, setItems] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!isSearch.current) {
-      fetchPizzas();
-    }
-    isSearch.current = false;
+    // if (!isSearch.current) {
+    getPizzas();
+    // }
+    // isSearch.current = false;
   }, [categoryId, sort, searchValue, currentPage]);
 
   useEffect(() => {
@@ -58,25 +59,21 @@ const Home = () => {
     isMounted.current = true;
   }, [categoryId, currentPage, sort]);
 
-  const fetchPizzas = () => {
-    setIsLoading(true);
+  const getPizzas = async () => {
     const searchBy = searchValue ? `search=${searchValue}&` : '';
     const catBy = categoryId > 0 ? `category=${categoryId}&` : '';
     const sortBy = `sortBy=${sort.sortProperty.replace('-', '')}&`;
-
     const orderBy = sort.sortProperty.includes('-') ? 'order=desc' : 'order=asc';
-    axios
-      .get(
-        `https://63abe7eafdc006ba6068ad16.mockapi.io/items?page=${currentPage}&limit=4&` +
-          searchBy +
-          catBy +
-          sortBy +
-          orderBy,
-      )
-      .then((res) => {
-        setItems(res.data);
-        setIsLoading(false);
-      });
+
+    dispatch(
+      fetchPizza({
+        searchBy,
+        catBy,
+        sortBy,
+        orderBy,
+        currentPage,
+      }),
+    );
   };
 
   const handleCategoryClick = (id) => {
@@ -104,7 +101,15 @@ const Home = () => {
         <Sort />
       </div>
       <h2 className="content__title">Все пиццы</h2>
-      <div className="content__items">{isLoading ? skeletons : pizzas}</div>
+      {status === 'error' ? (
+        <div className="content__error-info">
+          <h2>Произошла ошибка</h2>
+          <p>Не удалось получить питсы. Попробуйте попробовать позже</p>
+        </div>
+      ) : (
+        <div className="content__items">{status === 'loading' ? skeletons : pizzas}</div>
+      )}
+
       <Pagination currentPage={currentPage} onPageChange={(number) => handlePageClick(number)} />
     </>
   );
