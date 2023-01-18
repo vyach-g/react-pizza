@@ -1,18 +1,20 @@
-import React, { useState, useCallback, useContext, useRef } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import debounce from 'lodash.debounce';
 
-import { SearchContext } from '../../App';
-
 import styles from './Search.module.scss';
+import { useDispatch } from 'react-redux';
+import { setSearchValue } from '../../redux/slices/filterSlice';
 
 const Search = () => {
+  const dispatch = useDispatch();
+
   const [value, setValue] = useState('');
-  const { searchValue, setSearchValue } = useContext(SearchContext);
+
   const inputRef = useRef();
 
   const updateSeatchValue = useCallback(
     debounce((str) => {
-      setSearchValue(str);
+      dispatch(setSearchValue(str));
     }, 1000),
     [],
   );
@@ -23,8 +25,8 @@ const Search = () => {
   };
 
   const handleCrossClick = () => {
+    dispatch(setSearchValue(''));
     setValue('');
-    setSearchValue('');
     inputRef.current.focus();
   };
 

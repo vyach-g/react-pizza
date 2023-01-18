@@ -8,13 +8,12 @@ import Sort, { SORT } from '../components/Sort';
 import PizzaBlock from '../components/PizzaBlock/PizzaBlock';
 import PizzaBlockSkeleton from '../components/PizzaBlock/PizzaBlockSkeleton';
 import Pagination from '../components/Pagination/Pagination';
-import { SearchContext } from '../App';
 import { useSelector, useDispatch } from 'react-redux';
 import { setCategoryId, setCurrentPage, setFilters } from '../redux/slices/filterSlice';
 import { fetchPizza } from '../redux/slices/pizzaSlice';
 
 const Home = () => {
-  const { categoryId, sort, currentPage } = useSelector((state) => state.filter);
+  const { categoryId, sort, currentPage, searchValue } = useSelector((state) => state.filter);
   const { items, status } = useSelector((state) => state.pizza);
 
   const dispatch = useDispatch();
@@ -23,8 +22,6 @@ const Home = () => {
   const isMounted = useRef(false);
 
   console.log(categoryId);
-
-  const { searchValue } = useContext(SearchContext);
 
   useEffect(() => {
     // if (!isSearch.current) {
