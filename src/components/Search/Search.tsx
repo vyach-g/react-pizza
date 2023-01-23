@@ -5,29 +5,29 @@ import styles from './Search.module.scss';
 import { useDispatch } from 'react-redux';
 import { setSearchValue } from '../../redux/slices/filterSlice';
 
-const Search = () => {
+const Search: React.FC = () => {
   const dispatch = useDispatch();
 
   const [value, setValue] = useState('');
 
-  const inputRef = useRef();
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const updateSeatchValue = useCallback(
-    debounce((str) => {
+  const updateSearchValue = useCallback(
+    debounce((str: string) => {
       dispatch(setSearchValue(str));
     }, 1000),
     [],
   );
 
-  const handleChangeInput = (e) => {
+  const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);
-    updateSeatchValue(e.target.value);
+    updateSearchValue(e.target.value);
   };
 
   const handleCrossClick = () => {
     dispatch(setSearchValue(''));
     setValue('');
-    inputRef.current.focus();
+    inputRef.current?.focus();
   };
 
   return (

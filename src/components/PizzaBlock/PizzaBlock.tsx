@@ -5,13 +5,22 @@ import { Link } from 'react-router-dom';
 
 const typeNames = ['тонкое', 'традиционное'];
 
-const PizzaBlock = ({ id, title, price, imageUrl, sizes, types }) => {
+interface PizzaBlockTypes {
+  id: number;
+  title: string;
+  price: number;
+  imageUrl: string;
+  sizes: number[];
+  types: number[];
+}
+
+const PizzaBlock: React.FC<PizzaBlockTypes> = ({ id, title, price, imageUrl, sizes, types }) => {
   const [activeType, setActiveType] = useState(0);
   const [activeSize, setActiveSize] = useState(0);
 
   const dispatch = useDispatch();
   const addedCount =
-    useSelector((state) => state.cart.items.find((obj) => obj.id === id))?.count || 0;
+    useSelector((state: any) => state.cart.items.find((obj: any) => obj.id === id))?.count || 0;
 
   const onClickAdd = () => {
     const item = {

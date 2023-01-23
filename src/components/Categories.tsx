@@ -1,8 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 const CATEGORIES = ['Все', 'Мясные', 'Вегетарианская', 'Гриль', 'Острые', 'Закрытые'];
 
-const Categories = ({ categoryIndex, handleCategoryClick }) => {
+interface CategoriesProps {
+  categoryIndex: number;
+  handleCategoryClick: (index: number) => void;
+}
+
+const Categories: React.FC<CategoriesProps> = ({ categoryIndex, handleCategoryClick }) => {
   return (
     <div className="categories">
       <ul>

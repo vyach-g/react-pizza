@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
-import axios from 'axios';
+import React, { useEffect, useRef } from 'react';
 import qs from 'qs';
 import { useNavigate } from 'react-router-dom';
 
@@ -12,9 +11,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setCategoryId, setCurrentPage, setFilters } from '../redux/slices/filterSlice';
 import { fetchPizza } from '../redux/slices/pizzaSlice';
 
-const Home = () => {
-  const { categoryId, sort, currentPage, searchValue } = useSelector((state) => state.filter);
-  const { items, status } = useSelector((state) => state.pizza);
+const Home: React.FC = () => {
+  const { categoryId, sort, currentPage, searchValue } = useSelector((state: any) => state.filter);
+  const { items, status } = useSelector((state: any) => state.pizza);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -24,11 +23,28 @@ const Home = () => {
   console.log(categoryId);
 
   useEffect(() => {
+    const getPizzas = async () => {
+      const searchBy = searchValue ? `search=${searchValue}&` : '';
+      const catBy = categoryId > 0 ? `category=${categoryId}&` : '';
+      const sortBy = `sortBy=${sort.sortProperty.replace('-', '')}&`;
+      const orderBy = sort.sortProperty.includes('-') ? 'order=desc' : 'order=asc';
+
+      dispatch(
+        // @ts-ignore
+        fetchPizza({
+          searchBy,
+          catBy,
+          sortBy,
+          orderBy,
+          currentPage,
+        }),
+      );
+    };
     // if (!isSearch.current) {
     getPizzas();
     // }
     // isSearch.current = false;
-  }, [categoryId, sort, searchValue, currentPage]);
+  }, [categoryId, sort, searchValue, currentPage, dispatch]);
 
   useEffect(() => {
     if (window.location.search) {
@@ -42,7 +58,7 @@ const Home = () => {
       );
       isSearch.current = true;
     }
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     if (isMounted.current) {
@@ -54,30 +70,13 @@ const Home = () => {
       navigate(`?${queryString}`);
     }
     isMounted.current = true;
-  }, [categoryId, currentPage, sort]);
+  }, [categoryId, currentPage, navigate, sort]);
 
-  const getPizzas = async () => {
-    const searchBy = searchValue ? `search=${searchValue}&` : '';
-    const catBy = categoryId > 0 ? `category=${categoryId}&` : '';
-    const sortBy = `sortBy=${sort.sortProperty.replace('-', '')}&`;
-    const orderBy = sort.sortProperty.includes('-') ? 'order=desc' : 'order=asc';
-
-    dispatch(
-      fetchPizza({
-        searchBy,
-        catBy,
-        sortBy,
-        orderBy,
-        currentPage,
-      }),
-    );
-  };
-
-  const handleCategoryClick = (id) => {
+  const handleCategoryClick = (id: number) => {
     dispatch(setCategoryId(id));
   };
 
-  const handlePageClick = (index) => {
+  const handlePageClick = (index: number) => {
     dispatch(setCurrentPage(index));
   };
 
@@ -85,7 +84,7 @@ const Home = () => {
   //   setSortIndex(index);
   // };
 
-  const pizzas = items.map((item) => <PizzaBlock key={item.title} {...item} />);
+  const pizzas = items.map((item: any) => <PizzaBlock key={item.title} {...item} />);
 
   const skeletons = Array(6)
     .fill(null)
