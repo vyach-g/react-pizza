@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addItem } from '../../redux/slices/cartSlice';
+import { addItem, CartItem } from '../../redux/slices/cartSlice';
 import { Link } from 'react-router-dom';
+import { RootState } from '../../redux/store';
 
 const typeNames = ['тонкое', 'традиционное'];
 
 interface PizzaBlockTypes {
-  id: number;
+  id: string;
   title: string;
   price: number;
   imageUrl: string;
@@ -20,16 +21,17 @@ const PizzaBlock: React.FC<PizzaBlockTypes> = ({ id, title, price, imageUrl, siz
 
   const dispatch = useDispatch();
   const addedCount =
-    useSelector((state: any) => state.cart.items.find((obj: any) => obj.id === id))?.count || 0;
+    useSelector((state: RootState) => state.cart.items.find((obj) => obj.id === id))?.count || 0;
 
   const onClickAdd = () => {
-    const item = {
+    const item: CartItem = {
       id,
       title,
       price,
       imageUrl,
       type: typeNames[activeType],
       size: sizes[activeSize],
+      count: 0,
     };
     dispatch(addItem(item));
   };
